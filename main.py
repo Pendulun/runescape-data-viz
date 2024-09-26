@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Annotated, Union
 
-from fastapi import FastAPI, Query, Path
+from fastapi import FastAPI, Query, Path, Form
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -110,3 +110,8 @@ async def update_item(item_id: int, item: Item, q: str | None = None):
     if q:
         result.update({"q": q})
     return result
+
+
+@app.post("/login/")
+async def login(username: Annotated[str, Form()], password: Annotated[str, Form()]):
+    return {"username": username}
