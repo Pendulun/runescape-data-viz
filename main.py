@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Annotated
+from typing import Annotated, Union
 
 from fastapi import FastAPI, Query
 from pydantic import BaseModel
@@ -36,10 +36,13 @@ async def read_file(file_path: str):
 
 @app.get("/items/")
 async def read_items(q: Annotated[str | None,
-                                  Query(min_length=3, max_length=50)] = None):
+                                  Query(min_length=3, max_length=50)] = None,
+                    list_param : Annotated[Union[list[str], None], Query()] = None):
     results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
     if q:
         results.update({"q": q})
+    if list_param:
+        results.update({"list_param": list_param})
     return results
 
 
