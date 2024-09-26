@@ -57,7 +57,7 @@ async def read_items(q: Annotated[
 
 @app.get("/items/{item_id}")
 async def read_item(
-        item_id: Annotated[int, Path(title="The ID of the item to get")],
+        item_id: Annotated[int, Path(title="The ID of the item to get", ge=1, le=1000)],
         q: Annotated[Union[str, None], Query(alias="item-query")] = None,
         short: bool = False):
     item = {"item_id": item_id}
