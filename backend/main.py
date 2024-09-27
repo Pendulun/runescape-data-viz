@@ -5,8 +5,3 @@ from fastapi import FastAPI
 
 app = FastAPI(title=Settings.PROJECT_NAME, version=Settings.PROJECT_VERSION)
 app.include_router(api_router)
-
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}

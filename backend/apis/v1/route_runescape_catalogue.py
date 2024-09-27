@@ -1,4 +1,4 @@
-from repository.items_categories import get_category_id
+from repository.items_categories import ItemsCategories
 
 from fastapi import APIRouter
 import requests
@@ -7,9 +7,9 @@ from core.config import runescapeRoutesFormats
 router = APIRouter()
 
 
-@router.get("/catalogue/{category_name}")
+@router.get("/{category_name}")
 def catalogue(category_name: str):
-    cat_id = get_category_id(category_name.lower())
+    cat_id = ItemsCategories.get_category_id(category_name)
     if cat_id:
         request_url = runescapeRoutesFormats.CATEGORY.format(cat_id)
         category_info = requests.get(request_url)
