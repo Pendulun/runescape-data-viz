@@ -10,6 +10,7 @@ class runescapeRoutesFormats:
     CATEGORY: str = "https://services.runescape.com/m=itemdb_rs/api/catalogue/category.json?category={}"
     INFO: str = "https://secure.runescape.com/m=itemdb_rs/api/info.json"
     CATEGORY_ITEMS: str = "https://services.runescape.com/m=itemdb_rs/api/catalogue/items.json?category={}&alpha={}&page={}"
+    ITEM_INFO:str = "https://services.runescape.com/m=itemdb_rs/api/catalogue/detail.json?item={}"
 
 
 class dataSettings:

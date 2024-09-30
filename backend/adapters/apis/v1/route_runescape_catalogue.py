@@ -13,3 +13,7 @@ def category_info(category_name: str):
 @router.get("/{category_name}/items")
 def category_items(category_name: str):
     return ServerAdapters.category_service.get_category_items(category_name)
+
+@router.get("/item/{item_id}")
+def item_info(item_id:int):
+    return ServerAdapters.item_service.get_item_info(item_id)

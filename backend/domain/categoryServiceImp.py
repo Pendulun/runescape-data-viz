@@ -1,6 +1,5 @@
 from domain.categoryService import ICategoryService
 from domain.repository.categoryRepo import ICategoryRepo
-from functools import lru_cache
 
 
 #Domain class.

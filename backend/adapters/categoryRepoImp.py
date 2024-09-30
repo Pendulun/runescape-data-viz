@@ -16,7 +16,7 @@ class CategoryRepoRequest(ICategoryRepo):
 
     @lru_cache(maxsize=10)
     def get_category_id(self, category_name: str) -> int | None:
-        categories = self.get_categories_list(dataSettings.ITEMS_CLASSES_PATH)
+        categories = self.get_categories_list()
         try:
             return categories.index(category_name.lower())
         except Exception as e:
