@@ -15,3 +15,7 @@ class IItemRepo(abc.ABC):
     @abc.abstractmethod
     def get_item_info(self, item_id: int) -> int | None:
         return None
+    
+    @abc.abstractmethod
+    def get_item_prices(self, item_id:int) -> dict | None:
+        return None
