@@ -14,15 +14,15 @@ class ItemRepoRequest(IItemRepo):
         self.classes = None
 
     @lru_cache(maxsize=10)
-    def get_item_info(self, item_id: int) -> int | None:
+    def get_item_info(self, item_id: int) -> dict | None:
         request_path = runescapeRoutesFormats.ITEM_INFO.format(item_id)
         try:
             data = requests.get(request_path)
         except Exception as e:
-            print(f"[LOG] Except caught! {e}")
-            return None
+            print(f"[LOG] Exception caught! {e}")
+            raise e
         else:
-            item_data = None
+            item_data = dict()
             if data:
                 item_data = data.json()
             return item_data

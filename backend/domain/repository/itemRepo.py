@@ -13,7 +13,7 @@ class IItemRepo(abc.ABC):
         return self._instance
 
     @abc.abstractmethod
-    def get_item_info(self, item_id: int) -> int | None:
+    def get_item_info(self, item_id: int) -> dict | None:
         return None
     
     @abc.abstractmethod

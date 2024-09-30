@@ -16,7 +16,7 @@ class ItemServiceImp(IItemService):
             item_info = self.repo.get_item_info(item_id)
         except Exception as e:
             print(f"[LOG] Exception Occured: {e}")
-            return None
+            return dict()
         else:
             return item_info
 
