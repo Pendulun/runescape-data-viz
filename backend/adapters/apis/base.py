@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from apis.v1 import route_runescape_config, route_runescape_catalogue
+from adapters.apis.v1 import route_runescape_config, route_runescape_catalogue
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
 
