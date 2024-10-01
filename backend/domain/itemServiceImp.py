@@ -25,7 +25,7 @@ class ItemServiceImp(IItemService):
                 "ItemServiceImp - get_item_info: Exception Occured")
             return dict()
         else:
-            return item_info
+            return item_info['item']
 
     @lru_cache
     def get_item_prices(self, item_id: int) -> dict:
