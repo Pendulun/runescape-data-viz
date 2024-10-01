@@ -2,20 +2,27 @@ from domain.itemService import IItemService
 from domain.repository.itemRepo import IItemRepo
 from functools import lru_cache
 from datetime import datetime
+import logging
+from common.logger_wrapper import LoggerWrapper
 
 
 class ItemServiceImp(IItemService):
 
-    def __init__(self, repo: IItemRepo) -> None:
+    def __init__(self, repo: IItemRepo, logger: logging.Logger = None) -> None:
         super().__init__()
         self.repo = repo
+        self.logger = LoggerWrapper(logger)
+
+    def set_logger(self, logger: logging.Logger):
+        self.logger.set_logger(logger)
 
     @lru_cache(maxsize=10)
     def get_item_info(self, item_id: int) -> dict:
         try:
             item_info = self.repo.get_item_info(item_id)
         except Exception as e:
-            print(f"[LOG] Exception Occured: {e}")
+            self.logger.exception(
+                "ItemServiceImp - get_item_info: Exception Occured")
             return dict()
         else:
             return item_info
@@ -25,7 +32,8 @@ class ItemServiceImp(IItemService):
         try:
             item_prices = self.repo.get_item_prices(item_id)
         except Exception as e:
-            print(f"[LOG] Exception Occured: {e}")
+            self.logger.exception(
+                "ItemServiceImp - get_item_prices: Exception Occured")
             return None
         else:
             formated_prices = dict()

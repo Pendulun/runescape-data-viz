@@ -17,3 +17,6 @@ class runescapeRoutesFormats:
 class dataSettings:
     DATA_DIR_PATH: str = "./data/"
     ITEMS_CLASSES_PATH: str = pathlib.Path(DATA_DIR_PATH + "items_classes.txt")
+
+    LOG_DIR:str = "./log"
+    LOG_DATE_FMT = LOG_DIR+"/{}_{}_{}/"

@@ -1,13 +1,20 @@
+import logging
+
 from domain.categoryService import ICategoryService
 from domain.repository.categoryRepo import ICategoryRepo
+from common.logger_wrapper import LoggerWrapper
 
 
 #Domain class.
 class CategoryServiceImp(ICategoryService):
 
-    def __init__(self, repo: ICategoryRepo) -> None:
+    def __init__(self, repo: ICategoryRepo, logger:logging.Logger=None) -> None:
         super().__init__()
         self.repo: ICategoryRepo = repo
+        self.logger = LoggerWrapper(logger)
+    
+    def set_logger(self, logger:logging.Logger):
+        self.logger.set_logger(logger)
 
     def get_category_info(self, cat_name: str) -> dict | None:
         cat_id = self.repo.get_category_id(cat_name)
@@ -18,12 +25,12 @@ class CategoryServiceImp(ICategoryService):
 
     def get_category_items(self, cat_name: str) -> list[dict] | None:
         cat_id = self.repo.get_category_id(cat_name)
-        print(f"[LOG] Category name: {cat_name}. Category id: {cat_id}")
+        self.logger.debug(f"Category name: {cat_name}. Category id: {cat_id}")
         if cat_id is not None:
-            print(f"[LOG] Searching for category {cat_id} items")
+            self.logger.info(f"Searching for category {cat_id} items")
             return self.repo.get_category_items(cat_id)
         else:
-            print(f"[LOG] Not Cat id!")
+            self.logger.warning(f"Category {cat_name} doesn't have an ID!")
             return None
     
     def get_categories(self) -> list[str] | None:
