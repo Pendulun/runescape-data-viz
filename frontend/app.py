@@ -18,12 +18,17 @@ def get_category_items(cat_name: str) -> list[str]:
             cat_items = category_items.json()
     return cat_items
 
+st.set_page_config(
+    page_title="Runescape items visualizer"
+)
 
 curr_category = st.sidebar.selectbox("Item Category",
                                      get_categories(),
                                      index=None)
 cat_items = get_category_items(curr_category)
 
-st.sidebar.multiselect("Category Items",
+selected_category_items = st.sidebar.multiselect("Category Items",
                        [item_info['name'] for item_info in cat_items],
                        default=None)
+
+st.write(selected_category_items)
