@@ -59,33 +59,58 @@ class CategoryRepoRequest(ICategoryRepo):
         if category_data:
             items_per_first_letter = category_data['alpha']
             print(items_per_first_letter)
-            print(f"[LOG] Original n letters: {len(items_per_first_letter)}")
+
             letters_with_items = [
                 letter_dict for letter_dict in items_per_first_letter
                 if letter_dict['items'] > 0
             ]
-            print(f"[LOG] N Letters with items: {len(letters_with_items)}")
-            items = list()
-            #TODO paralelize this for
-            for letter_dict in letters_with_items:
-                curr_page = 1
-                letter, n_items_total = letter_dict['letter'], letter_dict[
-                    'items']
-                print(f"[LOG] CURR letter: {letter}, n_items: {n_items_total}")
-                while n_items_total > 0:
-                    request_url = runescapeRoutesFormats.CATEGORY_ITEMS.format(
-                        cat_id, letter, curr_page)
-                    print(f"[LOG] request url: {request_url}")
-                    curr_items_data = requests.get(request_url).json()
-                    curr_page += 1
-                    items.extend(curr_items_data['items'])
+
+            items = self._aggregate_cat_items(cat_id, letters_with_items)
+            print(f"[LOG] N items total: {len(items)}")
+
+            return items
+        else:
+            return None
+
+    def _aggregate_cat_items(self, cat_id: int,
+                             letters_and_n_items: list[dict]) -> list[dict]:
+        items = list()
+        #TODO paralelize this for
+        for letter_dict in letters_and_n_items:
+            letter_items = self._request_items_for_cat_and_letter(
+                cat_id, letter_dict)
+            items.extend(letter_items)
+        return items
+
+    def _request_items_for_cat_and_letter(self, cat_id:int, letter_dict:dict):
+        letter_items = list()
+        curr_page = 1
+        letter, n_items_total = letter_dict['letter'], letter_dict['items']
+        print(f"[LOG] CURR letter: {letter}, n_items: {n_items_total}")
+
+        while n_items_total > 0:
+            request_url = runescapeRoutesFormats.CATEGORY_ITEMS.format(
+                cat_id, letter, curr_page)
+            print(f"[LOG] request url: {request_url}")
+
+            try:
+                response = requests.get(request_url)
+            except Exception as e:
+                print(f"[LOG] An exception occurred: {e}")
+                break
+            else:
+                if response:
+                    curr_items_data = response.json()
+                    letter_items.extend(curr_items_data['items'])
                     n_items_this_request = len(curr_items_data['items'])
+                    curr_page += 1
                     print(
                         f"[LOG] N items this request: {n_items_this_request}")
                     n_items_total -= n_items_this_request
                     print(f"[LOG] N items left: {n_items_total}")
-
-            print(f"[LOG] N items total: {len(items)}")
-            return items
-        else:
-            return None
+                else:
+                    print(
+                        f"[LOG] Request for {request_url} returned None! Breaking"
+                    )
+                    break
+        return letter_items
