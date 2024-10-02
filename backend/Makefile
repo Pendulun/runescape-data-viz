@@ -3,7 +3,7 @@ install:
 	python3 -m pip install -r requirements.txt
 
 run: install
-	python3 -m pip --list
+	python3 -m pip list
 	fastapi dev main.py
 
 run-from-scratch:

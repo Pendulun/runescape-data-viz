@@ -1,33 +1,6 @@
 import streamlit as st
-import requests
 import pandas as pd
-
-
-@st.cache_data
-def get_categories() -> list[str]:
-    categories = requests.get("http://localhost:8000/catalogue/categories")
-    return categories.json()
-
-
-@st.cache_data
-def get_category_items(cat_name: str) -> list[str]:
-    cat_items = list()
-    if cat_name:
-        category_items = requests.get(
-            f"http://localhost:8000/catalogue/{cat_name}/items")
-        if category_items:
-            cat_items = category_items.json()
-    return cat_items
-
-
-@st.cache_data
-def get_item_info(item_id: int) -> dict | None:
-    if item_id is not None:
-        response = requests.get(
-            f"http://localhost:8000/catalogue/item/{item_id}")
-        if response:
-            return response.json()
-    return None
+from common import data_requests
 
 
 def treat_monetary_value(item_price: str) -> float:
@@ -84,9 +57,9 @@ def get_historical_prices(item_info: dict) -> pd.DataFrame:
 
 
 curr_category = st.sidebar.selectbox("Item Category",
-                                     get_categories(),
+                                     data_requests.get_categories(),
                                      index=None)
-cat_items = get_category_items(curr_category)
+cat_items = data_requests.get_category_items(curr_category)
 
 selected_item = st.sidebar.selectbox(
     "Category Items", [item_info['name'] for item_info in cat_items],
@@ -98,7 +71,7 @@ if selected_item is not None:
         item_info for item_info in cat_items
         if item_info['name'] == selected_item
     ][0]['id']
-    item_info = get_item_info(selected_item_id)
+    item_info = data_requests.get_item_info(selected_item_id)
     # st.write(item_info)
     st.title(f"{item_info.get('name', None)}")
     col1, col2 = st.columns(spec=2, gap="small", vertical_alignment="top")
