@@ -1,4 +1,6 @@
-run:
+install:
+	python3 -m pip install -r requirements.txt
+run: install
 	fastapi dev main.py
 
 test_item_service:
