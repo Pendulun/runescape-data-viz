@@ -1,6 +1,10 @@
 install:
+	pwd
 	python3 -m pip install -r requirements.txt
+
 run: install
+	pwd
+	python3 -m pip --list
 	fastapi dev main.py
 
 test_item_service:
