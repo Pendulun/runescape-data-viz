@@ -20,3 +20,5 @@ class dataSettings:
 
     LOG_DIR:str = "./log"
     LOG_DATE_FMT = LOG_DIR+"/{}_{}_{}/"
+
+    MAX_THREADS = 4

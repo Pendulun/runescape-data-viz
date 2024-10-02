@@ -1,3 +1,4 @@
+import concurrent.futures
 from functools import lru_cache
 import logging
 import pathlib
@@ -80,11 +81,29 @@ class CategoryRepoRequest(ICategoryRepo):
     def _aggregate_cat_items(self, cat_id: int,
                              letters_and_n_items: list[dict]) -> list[dict]:
         items = list()
-        #TODO paralelize this for
-        for letter_dict in letters_and_n_items:
-            letter_items = self._request_items_for_cat_and_letter(
-                cat_id, letter_dict)
-            items.extend(letter_items)
+        with concurrent.futures.ThreadPoolExecutor(
+                max_workers=dataSettings.MAX_THREADS) as executor:
+            future_to_letter_dict = {
+                executor.submit(self._request_items_for_cat_and_letter, cat_id, letter_dict):
+                letter_dict
+                for letter_dict in letters_and_n_items
+            }
+            for future in concurrent.futures.as_completed(
+                    future_to_letter_dict):
+                curr_letter_dict = future_to_letter_dict[future]
+                try:
+                    resultado = future.result()
+                    items.extend(resultado)
+                except Exception as exc:
+                    self.logger.exception(
+                        f'Request for {curr_letter_dict} generated an exception!'
+                    )
+
+            # for letter_dict in letters_and_n_items:
+            #     letter_items = self._request_items_for_cat_and_letter(
+            #         cat_id, letter_dict)
+            #     items.extend(letter_items)
+            items = sorted(items, key=lambda a: a['name'])
         return items
 
     def _request_items_for_cat_and_letter(self, cat_id: int,
