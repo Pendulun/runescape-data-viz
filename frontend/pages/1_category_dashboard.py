@@ -25,7 +25,7 @@ def format_item_info(item_info: dict):
     target_info['original_price'] = item_info['current']['price']
     target_info['price_change'] = item_info['treated_today_price_change']
     target_info['relative_change'] = item_info['relative_change']
-    target_info['icon'] = item_info['icon']
+    target_info['icon'] = item_info['icon_large']
     return target_info
 
 
