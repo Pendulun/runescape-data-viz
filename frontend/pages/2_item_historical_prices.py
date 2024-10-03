@@ -3,17 +3,6 @@ import pandas as pd
 from common import data_requests
 
 
-def treat_monetary_value(item_price: str) -> float:
-    if item_price is not None:
-        item_price = str(item_price).replace("k", "00")
-        item_price = item_price.replace(",", "").replace(".", "")
-        item_price = item_price.replace(" ", "")
-        item_price = float(item_price)
-        return item_price
-    else:
-        return None
-
-
 def get_percentage_of_string(string) -> float | None:
     return float(string.strip("%")) / 100 if string is not None else None
 
@@ -34,6 +23,7 @@ def get_prices_df(item_info: dict) -> pd.DataFrame:
     return df
 
 
+# Sidebar
 curr_category = st.sidebar.selectbox("Item Category",
                                      data_requests.get_categories(),
                                      index=None)
@@ -43,6 +33,7 @@ selected_item = st.sidebar.selectbox(
     "Category Items", [item_info['name'] for item_info in cat_items],
     index=None)
 
+# Main body
 selected_item_id = None
 if selected_item is not None:
     selected_item_id = [
@@ -64,6 +55,8 @@ if selected_item is not None:
         st.write(f"{item_info.get('description', None)}")
         st.write(f"ID: {selected_item_id}")
         st.write(f"Type: {curr_category}")
+        member = 'Yes' if item_info.get('members', "") == 'true' else 'No'
+        st.write(f"Member only: {member}")
 
     st.header("Price", divider=True)
 
