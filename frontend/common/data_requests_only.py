@@ -1,7 +1,5 @@
-import streamlit as st
 import requests
 
-@st.cache_data
 def get_categories() -> list[str]:
     response = requests.get("http://localhost:8000/catalogue/categories")
     categories = response.json()
@@ -9,7 +7,6 @@ def get_categories() -> list[str]:
     return categories
 
 
-@st.cache_data
 def get_category_items(cat_name: str) -> list[str]:
     cat_items = list()
     if cat_name:
@@ -20,7 +17,6 @@ def get_category_items(cat_name: str) -> list[str]:
     return cat_items
 
 
-@st.cache_data
 def get_item_info(item_id: int) -> dict | None:
     if item_id is not None:
         response = requests.get(
@@ -29,7 +25,6 @@ def get_item_info(item_id: int) -> dict | None:
             return response.json()
     return None
 
-@st.cache_data
 def get_item_historical_prices(item_id: int) -> dict | None:
     if item_id is not None:
         response = requests.get(
