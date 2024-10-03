@@ -131,14 +131,23 @@ if curr_category is not None:
     ## Top n prices
     max_top_n = 4
     st.subheader(f"Today Top {max_top_n} prices")
-    names_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
-    info_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
-    show_simple_list(get_top_prices, cat_items, max_top_n, names_cols, info_cols)
+    names_cols = st.columns(spec=max_top_n,
+                            gap="small",
+                            vertical_alignment="top")
+    info_cols = st.columns(spec=max_top_n,
+                           gap="small",
+                           vertical_alignment="top")
+    show_simple_list(get_top_prices, cat_items, max_top_n, names_cols,
+                     info_cols)
 
     ## Top n prices up abs
     st.subheader(f"Today Top {max_top_n} prices increases (absolute)")
-    names_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
-    info_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
+    names_cols = st.columns(spec=max_top_n,
+                            gap="small",
+                            vertical_alignment="top")
+    info_cols = st.columns(spec=max_top_n,
+                           gap="small",
+                           vertical_alignment="top")
     show_simple_list(get_top_prices_increases_abs,
                      cat_items,
                      max_top_n,
@@ -148,8 +157,12 @@ if curr_category is not None:
 
     ## Top n prices up relative
     st.subheader(f"Today Top {max_top_n} prices increases (relative)")
-    names_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
-    info_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
+    names_cols = st.columns(spec=max_top_n,
+                            gap="small",
+                            vertical_alignment="top")
+    info_cols = st.columns(spec=max_top_n,
+                           gap="small",
+                           vertical_alignment="top")
     show_simple_list(get_top_prices_increases_relative,
                      cat_items,
                      max_top_n,
@@ -159,8 +172,12 @@ if curr_category is not None:
 
     ## Top n prices down
     st.subheader(f"Today Top {max_top_n} prices decreases")
-    names_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
-    info_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
+    names_cols = st.columns(spec=max_top_n,
+                            gap="small",
+                            vertical_alignment="top")
+    info_cols = st.columns(spec=max_top_n,
+                           gap="small",
+                           vertical_alignment="top")
     show_simple_list(get_top_prices_decreases_abs,
                      cat_items,
                      max_top_n,
@@ -170,8 +187,12 @@ if curr_category is not None:
 
     ## Top n prices down relative
     st.subheader(f"Today Top {max_top_n} prices decreases (relative)")
-    names_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
-    info_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
+    names_cols = st.columns(spec=max_top_n,
+                            gap="small",
+                            vertical_alignment="top")
+    info_cols = st.columns(spec=max_top_n,
+                           gap="small",
+                           vertical_alignment="top")
     show_simple_list(get_top_prices_decreases_relative,
                      cat_items,
                      max_top_n,
