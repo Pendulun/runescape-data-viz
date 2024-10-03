@@ -97,8 +97,8 @@ def get_top_prices_decreases_relative(items: list[dict],
 def show_simple_list(filter_func,
                      items: list[dict],
                      max_cols: int,
-                     names_cols,
-                     info_cols,
+                     names_cols: list,
+                     info_cols: list,
                      more_info: bool = False):
     target_items = filter_func(items, top_n=max_cols)
     for col_id, name_col in enumerate(names_cols):
@@ -123,79 +123,45 @@ curr_category = st.sidebar.selectbox("Item Category",
 
 cat_items = data_requests.get_category_items(curr_category)
 
+# Main body
 if curr_category is not None:
-    # Main body
     st.title(curr_category.title())
     st.write(f"Num of items: {len(cat_items)}")
 
-    ## Top n prices
     max_top_n = 4
-    st.subheader(f"Today Top {max_top_n} prices")
-    names_cols = st.columns(spec=max_top_n,
-                            gap="small",
-                            vertical_alignment="top")
-    info_cols = st.columns(spec=max_top_n,
-                           gap="small",
-                           vertical_alignment="top")
-    show_simple_list(get_top_prices, cat_items, max_top_n, names_cols,
-                     info_cols)
+    infos_to_show = [{
+        "title": f"Today Top {max_top_n} prices",
+        "func": get_top_prices,
+        'more_info': False
+    }, {
+        "title": f"Today Top {max_top_n} prices increases (absolute)",
+        "func": get_top_prices_increases_abs,
+        'more_info': True
+    }, {
+        "title": f"Today Top {max_top_n} prices increases (relative)",
+        "func": get_top_prices_increases_relative,
+        'more_info': True
+    }, {
+        "title": f"Today Top {max_top_n} prices decreases (absolute)",
+        "func": get_top_prices_decreases_abs,
+        'more_info': True
+    }, {
+        "title": f"Today Top {max_top_n} prices decreases (relative)",
+        "func": get_top_prices_decreases_relative,
+        'more_info': True
+    }]
 
-    ## Top n prices up abs
-    st.subheader(f"Today Top {max_top_n} prices increases (absolute)")
-    names_cols = st.columns(spec=max_top_n,
-                            gap="small",
-                            vertical_alignment="top")
-    info_cols = st.columns(spec=max_top_n,
-                           gap="small",
-                           vertical_alignment="top")
-    show_simple_list(get_top_prices_increases_abs,
-                     cat_items,
-                     max_top_n,
-                     names_cols,
-                     info_cols,
-                     more_info=True)
-
-    ## Top n prices up relative
-    st.subheader(f"Today Top {max_top_n} prices increases (relative)")
-    names_cols = st.columns(spec=max_top_n,
-                            gap="small",
-                            vertical_alignment="top")
-    info_cols = st.columns(spec=max_top_n,
-                           gap="small",
-                           vertical_alignment="top")
-    show_simple_list(get_top_prices_increases_relative,
-                     cat_items,
-                     max_top_n,
-                     names_cols,
-                     info_cols,
-                     more_info=True)
-
-    ## Top n prices down
-    st.subheader(f"Today Top {max_top_n} prices decreases")
-    names_cols = st.columns(spec=max_top_n,
-                            gap="small",
-                            vertical_alignment="top")
-    info_cols = st.columns(spec=max_top_n,
-                           gap="small",
-                           vertical_alignment="top")
-    show_simple_list(get_top_prices_decreases_abs,
-                     cat_items,
-                     max_top_n,
-                     names_cols,
-                     info_cols,
-                     more_info=True)
-
-    ## Top n prices down relative
-    st.subheader(f"Today Top {max_top_n} prices decreases (relative)")
-    names_cols = st.columns(spec=max_top_n,
-                            gap="small",
-                            vertical_alignment="top")
-    info_cols = st.columns(spec=max_top_n,
-                           gap="small",
-                           vertical_alignment="top")
-    show_simple_list(get_top_prices_decreases_relative,
-                     cat_items,
-                     max_top_n,
-                     names_cols,
-                     info_cols,
-                     more_info=True)
+    for info in infos_to_show:
+        st.subheader(info['title'])
+        names_cols = st.columns(spec=max_top_n,
+                                gap="small",
+                                vertical_alignment="top")
+        info_cols = st.columns(spec=max_top_n,
+                               gap="small",
+                               vertical_alignment="top")
+        show_simple_list(info['func'],
+                         cat_items,
+                         max_top_n,
+                         names_cols,
+                         info_cols,
+                         more_info=info['more_info'])
