@@ -25,7 +25,7 @@ st.write(f"[Runescape]({runescape_url}) is a 20+ years old MMORPG game that was"
 ge_official_url="https://secure.runescape.com/m=itemdb_rs/"
 st.write("As this is a very common way, if not the main, to make ingame money,"\
          " it is likely that one should watch the prices for items it want to buy or"\
-        f" sell. Althougt there is already a [official website]({ge_official_url}) "\
+        f" sell. Althougt there is already an [official website]({ge_official_url}) "\
             "for the Grand Exchange Market, I wanted to give it a go and add "\
                 "a price forecast model to it. For fun. And as a portifolio project.")
 
