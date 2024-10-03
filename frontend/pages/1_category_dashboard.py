@@ -97,21 +97,23 @@ def get_top_prices_decreases_relative(items: list[dict],
 def show_simple_list(filter_func,
                      items: list[dict],
                      max_cols: int,
-                     col_container,
+                     names_cols,
+                     info_cols,
                      more_info: bool = False):
     target_items = filter_func(items, top_n=max_cols)
-    for col_id, col in enumerate(col_container):
+    for col_id, name_col in enumerate(names_cols):
         if col_id < len(target_items):
             item_info = target_items[col_id]
-            col.write(item_info['name'])
-            col.image(item_info['icon'], use_column_width='always')
-            col.write(f"Current price: {item_info['original_price']}")
+            name_col.write(item_info['name'])
+            info_col = info_cols[col_id]
+            info_col.image(item_info['icon'], use_column_width='always')
+            info_col.write(f"Current price: {item_info['original_price']}")
             if more_info:
-                col.write(f"Price Change: {item_info['price_change']}")
-                col.write(
+                info_col.write(f"Price Change: {item_info['price_change']}")
+                info_col.write(
                     f"Relative Change: {item_info['relative_change']:.2f}%")
         else:
-            col.write(None)
+            name_col.write(None)
 
 
 # Sidebar
@@ -129,41 +131,50 @@ if curr_category is not None:
     ## Top n prices
     max_top_n = 4
     st.subheader(f"Today Top {max_top_n} prices")
-    cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
-    show_simple_list(get_top_prices, cat_items, max_top_n, cols)
+    names_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
+    info_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
+    show_simple_list(get_top_prices, cat_items, max_top_n, names_cols, info_cols)
 
     ## Top n prices up abs
     st.subheader(f"Today Top {max_top_n} prices increases (absolute)")
-    cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
+    names_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
+    info_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
     show_simple_list(get_top_prices_increases_abs,
                      cat_items,
                      max_top_n,
-                     cols,
+                     names_cols,
+                     info_cols,
                      more_info=True)
 
     ## Top n prices up relative
     st.subheader(f"Today Top {max_top_n} prices increases (relative)")
-    cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
+    names_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
+    info_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
     show_simple_list(get_top_prices_increases_relative,
                      cat_items,
                      max_top_n,
-                     cols,
+                     names_cols,
+                     info_cols,
                      more_info=True)
 
     ## Top n prices down
     st.subheader(f"Today Top {max_top_n} prices decreases")
-    cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
+    names_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
+    info_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
     show_simple_list(get_top_prices_decreases_abs,
                      cat_items,
                      max_top_n,
-                     cols,
+                     names_cols,
+                     info_cols,
                      more_info=True)
 
     ## Top n prices down relative
     st.subheader(f"Today Top {max_top_n} prices decreases (relative)")
-    cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
+    names_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
+    info_cols = st.columns(spec=max_top_n, gap="small", vertical_alignment="top")
     show_simple_list(get_top_prices_decreases_relative,
                      cat_items,
                      max_top_n,
-                     cols,
+                     names_cols,
+                     info_cols,
                      more_info=True)
