@@ -3,8 +3,10 @@ import requests
 
 @st.cache_data
 def get_categories() -> list[str]:
-    categories = requests.get("http://localhost:8000/catalogue/categories")
-    return categories.json()
+    response = requests.get("http://localhost:8000/catalogue/categories")
+    categories = response.json()
+    categories = sorted(categories)
+    return categories
 
 
 @st.cache_data
