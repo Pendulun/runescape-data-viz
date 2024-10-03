@@ -1,7 +1,7 @@
 import copy
 
 import streamlit as st
-from common import data_requests, data_treatment
+from common import data_requests_wrapper, data_treatment
 
 
 def augment_data(items: list[dict]):
@@ -118,10 +118,10 @@ def show_simple_list(filter_func,
 
 # Sidebar
 curr_category = st.sidebar.selectbox("Item Category",
-                                     data_requests.get_categories(),
+                                     data_requests_wrapper.get_categories(),
                                      index=None)
 
-cat_items = data_requests.get_category_items(curr_category)
+cat_items = data_requests_wrapper.get_category_items(curr_category)
 
 # Main body
 if curr_category is not None:

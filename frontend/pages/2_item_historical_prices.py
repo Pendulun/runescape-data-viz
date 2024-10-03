@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from common import data_requests
+from common import data_requests_wrapper
 
 
 def get_percentage_of_string(string) -> float | None:
@@ -25,9 +25,9 @@ def get_prices_df(item_info: dict) -> pd.DataFrame:
 
 # Sidebar
 curr_category = st.sidebar.selectbox("Item Category",
-                                     data_requests.get_categories(),
+                                     data_requests_wrapper.get_categories(),
                                      index=None)
-cat_items = data_requests.get_category_items(curr_category)
+cat_items = data_requests_wrapper.get_category_items(curr_category)
 
 selected_item = st.sidebar.selectbox(
     "Category Items", [item_info['name'] for item_info in cat_items],
@@ -40,7 +40,7 @@ if selected_item is not None:
         item_info for item_info in cat_items
         if item_info['name'] == selected_item
     ][0]['id']
-    item_info = data_requests.get_item_info(selected_item_id)
+    item_info = data_requests_wrapper.get_item_info(selected_item_id)
     # st.write(item_info)
     st.title(f"{item_info.get('name', None)}")
     col1, col2 = st.columns(spec=2, gap="small", vertical_alignment="top")
@@ -60,6 +60,7 @@ if selected_item is not None:
 
     st.header("Price", divider=True)
 
-    item_prices = data_requests.get_item_historical_prices(selected_item_id)
+    item_prices = data_requests_wrapper.get_item_historical_prices(
+        selected_item_id)
     prices_df = get_prices_df(item_prices)
     st.line_chart(data=prices_df, x='date', y=['daily', '30 day average'])
