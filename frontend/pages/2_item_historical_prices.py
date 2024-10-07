@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from common import data_requests_wrapper
+from common.predict import augment_with_predictions
 
 
 def get_percentage_of_string(string) -> float | None:
@@ -23,6 +24,16 @@ def get_prices_df(item_info: dict) -> pd.DataFrame:
     return df
 
 
+@st.cache_data()
+def get_prices_with_predictions(item_id: int, selected_models: list[str],
+                                forward_days: int):
+    item_prices = data_requests_wrapper.get_item_historical_prices(item_id)
+    prices_df = get_prices_df(item_prices)
+    augmented_df, best_model_name, best_model_params, test_error = augment_with_predictions(
+        prices_df, selected_models, forward_days)
+    return augmented_df, best_model_name, best_model_params, test_error
+
+
 # Sidebar
 curr_category = st.sidebar.selectbox("Item Category",
                                      data_requests_wrapper.get_categories(),
@@ -35,13 +46,13 @@ selected_item = st.sidebar.selectbox(
 
 # Main body
 selected_item_id = None
+prices_df = None
 if selected_item is not None:
     selected_item_id = [
         item_info for item_info in cat_items
         if item_info['name'] == selected_item
     ][0]['id']
     item_info = data_requests_wrapper.get_item_info(selected_item_id)
-    # st.write(item_info)
     st.title(f"{item_info.get('name', None)}")
     col1, col2 = st.columns(spec=2, gap="small", vertical_alignment="top")
     with col1:
@@ -60,7 +71,31 @@ if selected_item is not None:
 
     st.header("Price", divider=True)
 
-    item_prices = data_requests_wrapper.get_item_historical_prices(
-        selected_item_id)
-    prices_df = get_prices_df(item_prices)
-    st.line_chart(data=prices_df, x='date', y=['daily', '30 day average'])
+    selected_models = st.multiselect("Predict with (only the best is used)",
+                                     ['ARIMA', 'AutoRegression'])
+
+    forward_days = st.select_slider(
+        "Num of days to predict",
+        options=[
+            1,
+            7,
+            14,
+            21,
+        ],
+    )
+    augmented_df, best_model_name, best_model_params, test_error = get_prices_with_predictions(
+        selected_item_id, selected_models, forward_days)
+    if len(selected_models) > 0:
+        best_result_msg = f"Best model: {best_model_name} with params: {best_model_params}"
+        best_result_msg += f" and test error (RMSE): {test_error:.2f}"
+        st.write(best_result_msg)
+
+        # st.write(augmented_df[~augmented_df['Test Pred'].isna()]['Test Pred'])
+        st.line_chart(
+            data=augmented_df,
+            x=None,
+            y=['daily', '30 day average', 'Test Pred', 'future_price'])
+        st.write("Predicted prices")
+        st.write(augmented_df[~augmented_df['future_price'].isna()]['future_price'])
+    else:
+        st.line_chart(data=augmented_df, x=None, y=['daily', '30 day average'])
