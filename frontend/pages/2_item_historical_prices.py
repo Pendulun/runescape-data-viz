@@ -12,8 +12,10 @@ def apply_change(value: float, percentage_change: float) -> float:
     return value + (value * percentage_change)
 
 
-def get_prices_df(item_info: dict) -> pd.DataFrame:
-    df = pd.DataFrame(item_info)
+@st.cache_data
+def get_prices_df(item_id: int) -> pd.DataFrame:
+    item_prices = data_requests_wrapper.get_item_historical_prices(item_id)
+    df = pd.DataFrame(item_prices)
     df.reset_index(inplace=True)
     df.rename({
         'index': 'date',
@@ -21,14 +23,16 @@ def get_prices_df(item_info: dict) -> pd.DataFrame:
     },
               inplace=True,
               axis='columns')
+    df.set_index("date", drop=True, inplace=True)
+    df.index = pd.DatetimeIndex(pd.to_datetime(df.index, format="%Y-%m-%d"),
+                                freq='infer')
     return df
 
 
 @st.cache_data()
 def get_prices_with_predictions(item_id: int, selected_models: list[str],
                                 forward_days: int):
-    item_prices = data_requests_wrapper.get_item_historical_prices(item_id)
-    prices_df = get_prices_df(item_prices)
+    prices_df = get_prices_df(item_id)
     augmented_df, best_model_name, best_model_params, test_error = augment_with_predictions(
         prices_df, selected_models, forward_days)
     return augmented_df, best_model_name, best_model_params, test_error
@@ -53,6 +57,7 @@ if selected_item is not None:
         if item_info['name'] == selected_item
     ][0]['id']
     item_info = data_requests_wrapper.get_item_info(selected_item_id)
+
     st.title(f"{item_info.get('name', None)}")
     col1, col2 = st.columns(spec=2, gap="small", vertical_alignment="top")
     with col1:
@@ -70,10 +75,8 @@ if selected_item is not None:
         st.write(f"Member only: {member}")
 
     st.header("Price", divider=True)
-
     selected_models = st.multiselect("Predict with (only the best is used)",
-                                     ['ARIMA', 'AutoRegression'])
-
+                                     ['ARIMA', 'AutoARIMA', 'Prophet'])
     forward_days = st.select_slider(
         "Num of days to predict",
         options=[
@@ -83,19 +86,33 @@ if selected_item is not None:
             21,
         ],
     )
-    augmented_df, best_model_name, best_model_params, test_error = get_prices_with_predictions(
-        selected_item_id, selected_models, forward_days)
-    if len(selected_models) > 0:
-        best_result_msg = f"Best model: {best_model_name} with params: {best_model_params}"
-        best_result_msg += f" and test error (RMSE): {test_error:.2f}"
-        st.write(best_result_msg)
 
-        # st.write(augmented_df[~augmented_df['Test Pred'].isna()]['Test Pred'])
-        st.line_chart(
-            data=augmented_df,
-            x=None,
-            y=['daily', '30 day average', 'Test Pred', 'future_price'])
-        st.write("Predicted prices")
-        st.write(augmented_df[~augmented_df['future_price'].isna()]['future_price'])
+    try:
+        augmented_df, best_model_name, best_model_params, test_error = get_prices_with_predictions(
+            selected_item_id, selected_models, forward_days)
+    except Exception as e:
+        st.exception(e)
     else:
-        st.line_chart(data=augmented_df, x=None, y=['daily', '30 day average'])
+        if len(selected_models) > 0:
+            best_result_msg = f"Best model: {best_model_name} with params: {best_model_params}"
+            best_result_msg += f" and test error (RMSE): {test_error:.2f}"
+            st.write(best_result_msg)
+
+            st.write(
+                f"{item_info.get('name', None)} historical prices and predictions"
+            )
+            st.line_chart(
+                data=augmented_df,
+                x=None,
+                y=['daily', '30 day average', 'Test Pred', 'future_price'])
+            GE_url = "https://secure.runescape.com/m=itemdb_rs/results"
+            st.markdown(
+                f"Search for the real price at the [Grand Exchange]({GE_url})")
+            st.write("Predicted prices")
+            st.write(augmented_df[~augmented_df['future_price'].isna()]
+                     ['future_price'])
+        else:
+            st.write(f"{item_info.get('name', None)} historical prices")
+            st.line_chart(data=augmented_df,
+                          x=None,
+                          y=['daily', '30 day average'])

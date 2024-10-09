@@ -1,5 +1,4 @@
 import streamlit as st
-import requests
 
 from common import data_requests_only
 

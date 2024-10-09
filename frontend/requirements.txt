@@ -1,1 +1,6 @@
 streamlit
+numpy<2
+sktime
+pandas
+pmdarima
+prophet
