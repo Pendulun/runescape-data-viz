@@ -3,9 +3,15 @@ import streamlit as st
 
 from backend.domain.categoryServiceImp import CategoryServiceImp
 from backend.domain.itemServiceImp import ItemServiceImp
+from backend.domain.runescapeAPIServiceImp import RunescapeAPIInfo
 from backend.adapters.categoryRepoImp import CategoryRepoRequest
 from backend.adapters.itemRepoImp import ItemRepoRequest
+from backend.adapters.runescapeAPIRepoImp import RunescapeAPIInfoRepo
 
+
+def get_last_updated() -> datetime:
+    last_updated = RunescapeAPIInfo(RunescapeAPIInfoRepo()).get_last_updated()
+    return last_updated
 
 @st.cache_data
 def get_categories() -> list[str]:
