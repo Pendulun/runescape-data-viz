@@ -1,19 +1,25 @@
 import logging
 
-from domain.categoryService import ICategoryService
-from domain.repository.categoryRepo import ICategoryRepo
-from common.logger_wrapper import LoggerWrapper
+from backend.domain.categoryService import ICategoryService
+from backend.domain.repository.categoryRepo import ICategoryRepo
+from backend.common.logger_wrapper import LoggerWrapper
 
 
 #Domain class.
 class CategoryServiceImp(ICategoryService):
+    SINGLETON = None
 
-    def __init__(self, repo: ICategoryRepo, logger:logging.Logger=None) -> None:
-        super().__init__()
-        self.repo: ICategoryRepo = repo
-        self.logger = LoggerWrapper(logger)
-    
-    def set_logger(self, logger:logging.Logger):
+    def __init__(self,
+                 repo: ICategoryRepo,
+                 logger: logging.Logger = None) -> None:
+        if self.SINGLETON:
+            return self.SINGLETON
+        else:
+            self.SINGLETON = super().__init__()
+            self.repo: ICategoryRepo = repo
+            self.logger = LoggerWrapper(logger)
+
+    def set_logger(self, logger: logging.Logger):
         self.logger.set_logger(logger)
 
     def get_category_info(self, cat_name: str) -> dict | None:
@@ -32,6 +38,6 @@ class CategoryServiceImp(ICategoryService):
         else:
             self.logger.warning(f"Category {cat_name} doesn't have an ID!")
             return None
-    
+
     def get_categories(self) -> list[str] | None:
         return self.repo.get_categories_list()

@@ -16,9 +16,13 @@ class runescapeRoutesFormats:
 
 class dataSettings:
     DATA_DIR_PATH: str = "./data/"
-    ITEMS_CLASSES_PATH: str = pathlib.Path(DATA_DIR_PATH + "items_classes.txt")
+    ITEMS_CLASSES_FILE_NAME: str = "items_classes.txt"
 
     LOG_DIR:str = "./log"
     LOG_DATE_FMT = LOG_DIR+"/{}_{}_{}/"
 
     MAX_THREADS = 4
+
+    @classmethod
+    def get_items_classes_path(cls) -> pathlib.Path:
+        return cls.DATA_DIR_PATH / cls.ITEMS_CLASSES_FILE_NAME

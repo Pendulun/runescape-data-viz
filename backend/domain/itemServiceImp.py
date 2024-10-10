@@ -1,17 +1,22 @@
-from domain.itemService import IItemService
-from domain.repository.itemRepo import IItemRepo
-from functools import lru_cache
 from datetime import datetime
+from functools import lru_cache
 import logging
-from common.logger_wrapper import LoggerWrapper
+
+from backend.domain.itemService import IItemService
+from backend.domain.repository.itemRepo import IItemRepo
+from backend.common.logger_wrapper import LoggerWrapper
 
 
 class ItemServiceImp(IItemService):
+    SINGLETON = None
 
     def __init__(self, repo: IItemRepo, logger: logging.Logger = None) -> None:
-        super().__init__()
-        self.repo = repo
-        self.logger = LoggerWrapper(logger)
+        if self.SINGLETON:
+            return self.SINGLETON
+        else:
+            self.SINGLETON = super().__init__()
+            self.repo = repo
+            self.logger = LoggerWrapper(logger)
 
     def set_logger(self, logger: logging.Logger):
         self.logger.set_logger(logger)

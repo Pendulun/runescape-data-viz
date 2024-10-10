@@ -1,21 +1,34 @@
+from datetime import datetime
 import streamlit as st
 
-from common import data_requests_only
+from backend.domain.categoryServiceImp import CategoryServiceImp
+from backend.domain.itemServiceImp import ItemServiceImp
+from backend.adapters.categoryRepoImp import CategoryRepoRequest
+from backend.adapters.itemRepoImp import ItemRepoRequest
+
 
 @st.cache_data
 def get_categories() -> list[str]:
-    return data_requests_only.get_categories()
+    categories = CategoryServiceImp(CategoryRepoRequest()).get_categories()
+    return categories
 
 
-@st.cache_data
-def get_category_items(cat_name: str) -> list[str]:
-    return data_requests_only.get_category_items(cat_name)
+@st.cache_data(hash_funcs={datetime: lambda dt: dt.isoformat()})
+def get_category_items(cat_name: str, today: datetime) -> list[str]:
+    cat_items = CategoryServiceImp(
+        CategoryRepoRequest()).get_category_items(cat_name)
+    if not cat_items:
+        cat_items = list()
+    return cat_items
 
 
 @st.cache_data
 def get_item_info(item_id: int) -> dict | None:
-    return data_requests_only.get_item_info(item_id)
+    item_info = ItemServiceImp(ItemRepoRequest()).get_item_info(item_id)
+    return item_info
 
-@st.cache_data
-def get_item_historical_prices(item_id: int) -> dict | None:
-    return data_requests_only.get_item_historical_prices(item_id)
+
+@st.cache_data(hash_funcs={datetime: lambda dt: dt.isoformat()})
+def get_item_historical_prices(item_id: int, today: datetime) -> dict | None:
+    item_prices = ItemServiceImp(ItemRepoRequest()).get_item_prices(item_id)
+    return item_prices

@@ -1,15 +1,26 @@
+import pathlib
+import sys
+
+sys.path.append("..")
+
+from backend.core.config import dataSettings
 import streamlit as st
+
+dataSettings.DATA_DIR_PATH = pathlib.Path("../backend/data/")
 
 st.set_page_config(page_title="Runescape items visualizer")
 
 st.title("Runescape item's prices visualizer")
 st.write("This is a personal project intended to practice to create an API,"\
-         " develop an user interface for the API and apply machine learning"\
+         " develop an user interface for the API and apply "\
             " forecast models to predict future item's prices.")
 github_url = "https://github.com/Pendulun"
 linkedin_url = "https://www.linkedin.com/in/souzacamposdaniel/"
+this_project_url = "https://github.com/Pendulun/runescape-data-viz"
 st.write(
-    f"Created by Daniel Souza de Campos. Reach me on [LinkedIn]({linkedin_url}) and see other projects on my [Github]({github_url})"
+    f"Created by Daniel Souza de Campos. Reach me on [LinkedIn]({linkedin_url})"\
+        f" and see other projects on my [Github]({github_url}). This project is"\
+        f" in my [GitHub]({this_project_url}) as well."
 )
 
 st.header("Context", divider=True)
@@ -22,7 +33,7 @@ st.write(f"[Runescape]({runescape_url}) is a 20+ years old MMORPG game that was"
         " craft items inside the game, they can sell it as well in the market." \
         " Then, other players might buy it for many reasons. It really resembles"\
         " a real market where prices are defined/suggested based on supply and demand.")
-ge_official_url="https://secure.runescape.com/m=itemdb_rs/"
+ge_official_url = "https://secure.runescape.com/m=itemdb_rs/"
 st.write("As this is a very common way, if not the main, to make ingame money,"\
          " it is likely that one should watch the prices for items it want to buy or"\
         f" sell. Althougt there is already an [official website]({ge_official_url}) "\

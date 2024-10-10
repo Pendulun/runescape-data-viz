@@ -4,17 +4,21 @@ import logging
 import pathlib
 import requests
 
-from common.logger_wrapper import LoggerWrapper
-from core.config import dataSettings, runescapeRoutesFormats
-from domain.repository.categoryRepo import ICategoryRepo
+from backend.common.logger_wrapper import LoggerWrapper
+from backend.core.config import dataSettings, runescapeRoutesFormats
+from backend.domain.repository.categoryRepo import ICategoryRepo
 
 
 # This is an implementation of a Out port.
 # That is, conceptually, in a Hexagonal Architecture, this is an Adapter
 class CategoryRepoRequest(ICategoryRepo):
+    SINGLETON = None
 
     def __init__(self, logger: logging.Logger = None) -> None:
-        super().__init__()
+        if self.SINGLETON:
+            return self.SINGLETON
+        else:
+            self.SINGLETON = super().__init__()
         self.classes = None
         self.logger = LoggerWrapper(logger)
 
@@ -32,10 +36,11 @@ class CategoryRepoRequest(ICategoryRepo):
             return None
 
     def get_categories_list(self) -> list[str] | None:
-        if self.classes:
+        if self.classes is not None:
             return self.classes
         try:
-            target_file_path = pathlib.Path(dataSettings.ITEMS_CLASSES_PATH)
+            self.logger.debug(pathlib.Path('.').resolve())
+            target_file_path = dataSettings.get_items_classes_path()
             with open(target_file_path, 'r') as file:
                 self.classes = [
                     line.strip().split(",")[1].lower() for line in file

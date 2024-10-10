@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from common import data_requests_wrapper
 from common.predict import augment_with_predictions
+from datetime import datetime
 
 
 def get_percentage_of_string(string) -> float | None:
@@ -12,9 +13,10 @@ def apply_change(value: float, percentage_change: float) -> float:
     return value + (value * percentage_change)
 
 
-@st.cache_data
-def get_prices_df(item_id: int) -> pd.DataFrame:
-    item_prices = data_requests_wrapper.get_item_historical_prices(item_id)
+@st.cache_data(hash_funcs={datetime: lambda dt: dt.isoformat()})
+def get_prices_df(item_id: int, today: datetime) -> pd.DataFrame:
+    item_prices = data_requests_wrapper.get_item_historical_prices(
+        item_id, today)
     df = pd.DataFrame(item_prices)
     df.reset_index(inplace=True)
     df.rename({
@@ -29,10 +31,10 @@ def get_prices_df(item_id: int) -> pd.DataFrame:
     return df
 
 
-@st.cache_data()
-def get_prices_with_predictions(item_id: int, selected_models: list[str],
-                                forward_days: int):
-    prices_df = get_prices_df(item_id)
+@st.cache_data(hash_funcs={datetime: lambda dt: dt.isoformat()})
+def get_prices_with_predictions(prices_df: pd.DataFrame,
+                                selected_models: list[str], forward_days: int,
+                                today):
     augmented_df, best_model_name, best_model_params, test_error = augment_with_predictions(
         prices_df, selected_models, forward_days)
     return augmented_df, best_model_name, best_model_params, test_error
@@ -42,7 +44,8 @@ def get_prices_with_predictions(item_id: int, selected_models: list[str],
 curr_category = st.sidebar.selectbox("Item Category",
                                      data_requests_wrapper.get_categories(),
                                      index=None)
-cat_items = data_requests_wrapper.get_category_items(curr_category)
+cat_items = data_requests_wrapper.get_category_items(curr_category,
+                                                     datetime.today().date())
 
 selected_item = st.sidebar.selectbox(
     "Category Items", [item_info['name'] for item_info in cat_items],
@@ -80,20 +83,21 @@ if selected_item is not None:
     forward_days = st.select_slider(
         "Num of days to predict",
         options=[
-            1,
             7,
             14,
             21,
         ],
     )
 
-    try:
-        augmented_df, best_model_name, best_model_params, test_error = get_prices_with_predictions(
-            selected_item_id, selected_models, forward_days)
-    except Exception as e:
-        st.exception(e)
-    else:
-        if len(selected_models) > 0:
+    today = datetime.today().date()
+    prices_df = get_prices_df(selected_item_id, today)
+    if len(selected_models) > 0:
+        try:
+            augmented_df, best_model_name, best_model_params, test_error = get_prices_with_predictions(
+                prices_df, selected_models, forward_days, today)
+        except Exception as e:
+            st.exception(e)
+        else:
             best_result_msg = f"Best model: {best_model_name} with params: {best_model_params}"
             best_result_msg += f" and test error (RMSE): {test_error:.2f}"
             st.write(best_result_msg)
@@ -111,8 +115,6 @@ if selected_item is not None:
             st.write("Predicted prices")
             st.write(augmented_df[~augmented_df['future_price'].isna()]
                      ['future_price'])
-        else:
-            st.write(f"{item_info.get('name', None)} historical prices")
-            st.line_chart(data=augmented_df,
-                          x=None,
-                          y=['daily', '30 day average'])
+    else:
+        st.write(f"{item_info.get('name', None)} historical prices")
+        st.line_chart(data=prices_df, x=None, y=['daily', '30 day average'])

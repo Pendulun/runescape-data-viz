@@ -79,7 +79,8 @@ def augment_with_predictions(
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             best_model.fit(data['daily'])
-        fh = ForecastingHorizon(list(range(1, forward_days)), is_relative=True)
+        fh = ForecastingHorizon(list(range(1, forward_days + 1)),
+                                is_relative=True)
         future_preds = best_model.predict(fh)
         future_preds = pd.DataFrame(future_preds)
         future_preds.rename({'daily': 'future_price'},
