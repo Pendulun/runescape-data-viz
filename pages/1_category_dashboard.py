@@ -118,15 +118,15 @@ def show_simple_list(filter_func,
 
 
 # Sidebar
-curr_category = st.sidebar.selectbox("Item Category",
-                                     data_requests_wrapper.get_categories(),
-                                     index=None)
-
-cat_items = data_requests_wrapper.get_category_items(curr_category,
-                                                     datetime.today().date())
+categories = data_requests_wrapper.get_categories()
+curr_category = st.sidebar.selectbox("Item Category", categories, index=None)
 
 # Main body
 if curr_category is not None:
+    cat_items = data_requests_wrapper.get_category_items(
+        curr_category,
+        datetime.today().date())
+
     st.title(curr_category.title())
     st.write(f"Num of items: {len(cat_items)}")
 

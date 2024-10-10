@@ -1,12 +1,7 @@
 import pathlib
-import sys
-
-sys.path.append("..")
 
 from backend.core.config import dataSettings
 import streamlit as st
-
-dataSettings.DATA_DIR_PATH = pathlib.Path("../backend/data/")
 
 st.set_page_config(page_title="Runescape items visualizer")
 

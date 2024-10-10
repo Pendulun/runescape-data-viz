@@ -1,5 +1,5 @@
-backend:
-	fastapi dev ./backend/main.py
+run:
+	streamlit run home.py
 
-frontend:
-	python -m streamlit run ./frontend/home.py
+install:
+	python3 -m pip install -r requirements.txt
