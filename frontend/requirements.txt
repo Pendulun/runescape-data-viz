@@ -4,3 +4,4 @@ sktime
 pandas
 pmdarima
 prophet
+requests
