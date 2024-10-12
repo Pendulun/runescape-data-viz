@@ -79,7 +79,7 @@ if selected_item is not None:
 
     st.header("Price", divider=True)
     selected_models = st.multiselect("Predict with (only the best is used)",
-                                     ['ARIMA', 'AutoARIMA', 'Prophet'])
+                                     ['AutoARIMA', 'Prophet'])
     forward_days = st.select_slider(
         "Num of days to predict",
         options=[

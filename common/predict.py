@@ -21,18 +21,6 @@ def augment_with_predictions(
         fh = ForecastingHorizon(Y_test.index, is_relative=False)
         forecasters = list()
         param_grid = dict()
-        if 'ARIMA' in models_to_use:
-            forecasters.append(
-                ("ARIMA",
-                 TransformedTargetForecaster([
-                     ("deseasonalize", Deseasonalizer(model="additive", sp=7)),
-                     ("forecast", ARIMA(seasonal_order=(0, 0, 0, 0))),
-                 ])))
-            param_grid["ARIMA__order"] = [(i, 0, i)
-                                          for i in range(forward_days, 30)
-                                          if i % 7 == 0 or i == 1]
-            param_grid.setdefault('selected_forecaster',
-                                  list()).append('ARIMA')
 
         if "AutoARIMA" in models_to_use:
             forecasters.append(
@@ -63,7 +51,8 @@ def augment_with_predictions(
         gscv = ForecastingGridSearchCV(forecaster,
                                        strategy="refit",
                                        cv=cv,
-                                       param_grid=param_grid)
+                                       param_grid=param_grid,
+                                       backend='multiprocessing')
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             gscv.fit(Y_train)
