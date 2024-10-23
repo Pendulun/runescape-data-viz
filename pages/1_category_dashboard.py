@@ -35,11 +35,24 @@ def get_top_n_by_col_and_filter(items: list[dict],
                                 target_col: str,
                                 reverse: bool,
                                 filter: str = None) -> list[dict]:
-    sorted_items = sorted(items, key=lambda i: i[target_col], reverse=reverse)
+    """
+    Returns the top top_n values by target_col.
+
+    Args:
+        items: A list of dicts with each dict beeing some item info
+        top_n: A integer indicating how many itens max to return
+        target_col: Target item dict key to where to sort
+        reverse: A bool indicating that we want on descending (True) order
+        filter: One of ('negatives', 'positives', None) indicating to filter out
+            values on target_col
+
+    """
     if filter == "negatives":
-        sorted_items = [item for item in sorted_items if item[target_col] < 0]
+        items = [item for item in items if item[target_col] < 0]
     elif filter == "positives":
-        sorted_items = [item for item in sorted_items if item[target_col] > 0]
+        items = [item for item in items if item[target_col] > 0]
+
+    sorted_items = sorted(items, key=lambda i: i[target_col], reverse=reverse)
     top_n_items = [format_item_info(item) for item in sorted_items[:top_n]]
     return top_n_items
 
