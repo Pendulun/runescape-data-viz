@@ -5,7 +5,7 @@ import streamlit as st
 from common import data_requests_wrapper, data_treatment
 
 
-def augment_data(items: list[dict]):
+def augment_data(items: list[dict]) -> list[dict]:
     items_copy = copy.deepcopy(items)
     for item in items_copy:
         item['treated_current_price'] = data_treatment.treat_monetary_value(
@@ -19,7 +19,7 @@ def augment_data(items: list[dict]):
     return items_copy
 
 
-def format_item_info(item_info: dict):
+def format_item_info(item_info: dict) -> dict:
     target_info = dict()
     target_info['name'] = item_info['name']
     target_info['treated_price'] = item_info['treated_current_price']
@@ -56,7 +56,7 @@ def get_top_prices(items: list[dict], top_n: int = 5) -> list[dict]:
 
 
 def get_top_prices_increases_abs(items: list[dict],
-                                 top_n: int = 5) -> list[tuple]:
+                                 top_n: int = 5) -> list[dict]:
     target_items = get_top_n_by_col_and_filter(items,
                                                top_n,
                                                'treated_today_price_change',
@@ -76,7 +76,7 @@ def get_top_prices_increases_relative(items: list[dict],
 
 
 def get_top_prices_decreases_abs(items: list[dict],
-                                 top_n: int = 5) -> list[tuple]:
+                                 top_n: int = 5) -> list[dict]:
     target_items = get_top_n_by_col_and_filter(items,
                                                top_n,
                                                'treated_today_price_change',
