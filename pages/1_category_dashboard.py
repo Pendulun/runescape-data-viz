@@ -58,8 +58,7 @@ def get_top_n_by_col_and_filter(items: list[dict],
 
 
 def get_top_prices(items: list[dict], top_n: int = 5) -> list[dict]:
-    treated_items = augment_data(items)
-    target_items = get_top_n_by_col_and_filter(treated_items,
+    target_items = get_top_n_by_col_and_filter(items,
                                                top_n,
                                                'treated_current_price',
                                                reverse=True)
@@ -68,8 +67,7 @@ def get_top_prices(items: list[dict], top_n: int = 5) -> list[dict]:
 
 def get_top_prices_increases_abs(items: list[dict],
                                  top_n: int = 5) -> list[dict]:
-    treated_items = augment_data(items)
-    target_items = get_top_n_by_col_and_filter(treated_items,
+    target_items = get_top_n_by_col_and_filter(items,
                                                top_n,
                                                'treated_today_price_change',
                                                reverse=True,
@@ -79,8 +77,7 @@ def get_top_prices_increases_abs(items: list[dict],
 
 def get_top_prices_increases_relative(items: list[dict],
                                       top_n: int = 5) -> list[dict]:
-    treated_items = augment_data(items)
-    target_items = get_top_n_by_col_and_filter(treated_items,
+    target_items = get_top_n_by_col_and_filter(items,
                                                top_n,
                                                'relative_change',
                                                reverse=True,
@@ -90,8 +87,7 @@ def get_top_prices_increases_relative(items: list[dict],
 
 def get_top_prices_decreases_abs(items: list[dict],
                                  top_n: int = 5) -> list[dict]:
-    treated_items = augment_data(items)
-    target_items = get_top_n_by_col_and_filter(treated_items,
+    target_items = get_top_n_by_col_and_filter(items,
                                                top_n,
                                                'treated_today_price_change',
                                                reverse=False,
@@ -101,8 +97,7 @@ def get_top_prices_decreases_abs(items: list[dict],
 
 def get_top_prices_decreases_relative(items: list[dict],
                                       top_n: int = 5) -> list[dict]:
-    treated_items = augment_data(items)
-    target_items = get_top_n_by_col_and_filter(treated_items,
+    target_items = get_top_n_by_col_and_filter(items,
                                                top_n,
                                                'relative_change',
                                                reverse=False,
@@ -168,6 +163,8 @@ if curr_category is not None:
         'more_info': True
     }]
 
+    treated_items = augment_data(cat_items)
+
     for info in infos_to_show:
         st.subheader(info['title'])
         names_cols = st.columns(spec=max_top_n,
@@ -177,7 +174,7 @@ if curr_category is not None:
                                gap="small",
                                vertical_alignment="top")
         show_simple_list(info['func'],
-                         cat_items,
+                         treated_items,
                          max_top_n,
                          names_cols,
                          info_cols,
