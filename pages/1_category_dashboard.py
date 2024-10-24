@@ -105,16 +105,13 @@ def get_top_prices_decreases_relative(items: list[dict],
     return target_items
 
 
-def show_simple_list(filter_func,
-                     items: list[dict],
-                     max_cols: int,
+def show_simple_list(items: list[dict],
                      names_cols: list,
                      info_cols: list,
                      more_info: bool = False):
-    target_items = filter_func(items, top_n=max_cols)
     for col_id, name_col in enumerate(names_cols):
-        if col_id < len(target_items):
-            item_info = target_items[col_id]
+        if col_id < len(items):
+            item_info = items[col_id]
             name_col.write(item_info['name'])
             info_col = info_cols[col_id]
             info_col.image(item_info['icon'], use_column_width='always')
@@ -173,9 +170,8 @@ if curr_category is not None:
         info_cols = st.columns(spec=max_top_n,
                                gap="small",
                                vertical_alignment="top")
-        show_simple_list(info['func'],
-                         treated_items,
-                         max_top_n,
+        target_items = info['func'](treated_items, top_n=max_top_n)
+        show_simple_list(target_items,
                          names_cols,
                          info_cols,
                          more_info=info['more_info'])
