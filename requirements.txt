@@ -1,7 +1,7 @@
-streamlit
-numpy<2
-sktime
-pandas
-pmdarima
-prophet
-requests
+streamlit==1.39.0
+numpy==1.26.4
+sktime==0.33.1
+pandas==2.2.3
+pmdarima==2.0.4
+prophet==1.1.6
+requests==2.32.3
